@@ -1,39 +1,49 @@
 /* jslint node: true */
 'use strict';
 module.exports = function (grunt) {
-
   var transformify = require('transformify');
-  var requires = require('./sections/_default/browser-requires.js')();
+  var requires = require('./sections/_default/browser-requires.js' )();
 
 
-  var addRequires = transformify(function (x) {
-    return x.replace('/* modules browserify */', requires);
+  var addRequires = transformify( function ( x ) {
+    return x.replace( '/* modules browserify */', requires);
   });
     // Project configuration.
   grunt.initConfig({
     pkg     : grunt.file.readJSON('package.json'),
     jshint  : {
-      all     : [ 'Gruntfile.js', 'index.js', 'sections/**/*.js' ]
+      all     : [ 'package.json', 'bower.json', 'Gruntfile.js', 'index.js', 'sections/**/*.js' ]
     },
     browserify: {
-      dist: {
-        files: {
-          'static/js/app.js': ['sections/_default/angular-app.js']
+        dist: {
+            files: {
+                'public/js/app.js': ['sections/_default/angular-app.js']
+            },
+            options: {
+                transform: [ addRequires, 'browserify-shim'],
+                browserifyOptions : { debug : true },
+                minify : { mangle : false }
+            }
         },
-        options: {
-          transform: [ addRequires, 'browserify-shim']
+        dev: {
+            files: {
+                'public/js/app.min.js': ['sections/_default/angular-app.js']
+            },
+            options: {
+                transform: [ addRequires, 'browserify-shim'],
+                debug : true,
+            }
         }
-      }
     },
     uglify  : {
-      target : {
-        files : { 'static/js/app.min.js' : 'static/js/app.js' }
-      },
-      options: {
-        mangle: false
-      }
+        target : {
+            files : { 'public/js/app.min.js' : 'public/js/app.js' }
+        },
+        options: {
+            mangle: false
+        }
     },
-    clean : [ 'static/js/app.js' ]
+    clean : [ 'public/js/app.js' ]
   });
 
   grunt.loadNpmTasks('grunt-browserify');
@@ -41,15 +51,18 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-clean');
 
-
     // Default task(s).
   grunt.registerTask('default', [
       'jshint',
-      'browserify',
+      'browserify:dist',
       'uglify',
       'clean'
     ]
   );
+  grunt.registerTask('dev', [
+      'jshint',
+      'browserify:dev'
+    ]
+  );
 
 };
-
