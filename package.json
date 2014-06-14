@@ -3,13 +3,14 @@
   "version": "0.0.0",
   "main": "index.js",
   "dependencies": {
-    "express": "~3.2.6",
-    "jade": "~0.31.2",
-    "di": "0.0.1",
-    "transformify": "~0.1.2",
-    "express-less": "0.0.2",
     "browserify": "~3.28.1",
-    "browserify-shim": "^3.3.1"
+    "browserify-shim": "^3.3.1",
+    "di": "0.0.1",
+    "express": "~3.2.6",
+    "express-less": "0.0.2",
+    "jade": "~0.31.2",
+    "mapbox.js": "^1.6.4",
+    "transformify": "~0.1.2"
   },
   "scripts": {
     "test": "grunt"
@@ -20,26 +21,42 @@
     "bootstrap": "./bower_components/bootstrap/dist/js/bootstrap.js",
     "angular-resource": "./bower_components/angular-resource/angular-resource.js",
     "angular-route": "./bower_components/angular-route/angular-route.js",
+    "angular-leaflet-directive": "./bower_components/angular-leaflet-directive/dist/angular-leaflet-directive.min.js",
     "angular-bootstrap": "./bower_components/angular-bootstrap/ui-bootstrap-tpls.js"
   },
   "browserify-shim": {
-      "jquery": "$",
-      "angular": {
-          "exports" : "angular",
-          "depends": [ "jquery:$" ]
-      },
-      "angular-bootstrap": {
-          "depends": [ "angular:angular" ]
-      },
-      "angular-resource": {
-          "depends": [ "angular:angular" ]
-      },
-      "angular-route": {
-          "depends": [ "angular:angular" ]
-      },
-      "bootstrap": {
-          "depends": [ "jquery:$" ]
-      }
+    "jquery": "$",
+    "angular": {
+      "exports": "angular",
+      "depends": [
+        "jquery:$"
+      ]
+    },
+    "angular-bootstrap": {
+      "depends": [
+        "angular:angular"
+      ]
+    },
+    "angular-resource": {
+      "depends": [
+        "angular:angular"
+      ]
+    },
+    "angular-route": {
+      "depends": [
+        "angular:angular"
+      ]
+    },
+    "angular-leaflet-directive": {
+      "depends": [
+        "angular:angular"
+      ]
+    },
+    "bootstrap": {
+      "depends": [
+        "jquery:$"
+      ]
+    }
   },
   "devDependencies": {
     "grunt": "~0.4.2",

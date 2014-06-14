@@ -6,11 +6,13 @@ require('angular-resource');
 require('angular-route');
 require('bootstrap');
 require('angular-bootstrap');
+require('angular-leaflet-directive');
 
 var app = angular.module('krop', [
-    'ngRoute',
-    'ui.bootstrap',
-    'ngResource'
+      'leaflet-directive',
+      'ngRoute',
+      'ui.bootstrap',
+      'ngResource'
     ]);
 app.config(function ($routeProvider) {
   $routeProvider.otherwise({redirectTo : '/view1'});

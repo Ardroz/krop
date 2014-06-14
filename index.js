@@ -25,7 +25,7 @@ app.use(express.compress());
 app.use(express.methodOverride());
 app.use(express.bodyParser());
 app.use('/css', expressLess(__dirname + '/sections/_default/less'));
-app.use(express.static(path.join(__dirname, 'static')));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use('/vendor', express.static(__dirname + '/bower_components'));
 app.use(app.router);
 
@@ -52,4 +52,3 @@ app.get(/\/html\/([\w\/]+)\.html/, function (req, res) {
 http.createServer(app).listen(app.get('port'), function () {
   console.log('Express app listening on port ' + app.get('port'));
 });
-
