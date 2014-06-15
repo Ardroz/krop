@@ -1,12 +1,46 @@
-button.btn.btn-warning(
-  ng-click = 'addMarker()'
-) Yolo
+.col-md-6
+  button.btn.btn.lg.btn-success(
+    ng-click = 'addMarker()'
+  ) Añadir Marcador
+  p.clearfix
+  .col-md-10
+    table.table
+      th
+        tr
+          td Marcador
+          td Latitud
+          td Longitud
+          td Acciones
 
-leaflet.pull-right(
-  center = 'center'
-  defaults = 'map'
-  height = '480px'
-  markers = 'markers'
-  paths = 'paths'
-  width = '640px'
-)
+      tbody
+        tr(
+          ng-repeat = 'marker in markers'
+        )
+          td
+            input.col-md-12(
+              ng-model = 'marker.message'
+            )
+          td(
+            ng-bind = 'marker.lat | number:3'
+          )
+          td(
+            ng-bind = 'marker.lng | number:3'
+          )
+          td
+            .btn-group
+              button.btn.btn-info(
+                ng-click = 'marker.draggable = !marker.draggable;'
+              ) *
+              button.btn.btn-danger(
+                ng-click = 'deleteMarker($index)'
+              ) -
+
+.col-md-6
+  leaflet.pull-right(
+    center = 'center'
+    defaults = 'map'
+    height = '480px'
+    markers = 'markers'
+    paths = 'paths'
+    width = '640px'
+  )

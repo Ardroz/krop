@@ -31,7 +31,10 @@ module.exports = function ( angular, app ) {
       };
 
       scope.markers.push( marker );
-      scope.paths.polygon.latlngs.push(marker);
+    };
+
+    scope.deleteMarker = function ( index ) {
+      scope.markers.splice( index, 1 );
     };
 
     scope.paths = {
