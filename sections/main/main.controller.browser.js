@@ -9,7 +9,9 @@ module.exports = function ( angular, app ) {
 
   main.$inject = [ '$scope', 'leafletEvents' ];
   function main ( scope, leafletEvents ) {
+    scope.status = 'portals';
     scope.pathsCoords = [];
+
     scope.map = {
       tileLayer: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       maxZoom: 1000
@@ -19,28 +21,34 @@ module.exports = function ( angular, app ) {
       autoDiscover: true
     };
 
-    scope.markers = [];
+    scope.portals = [];
+    scope.temporals = [];
 
-    scope.addMarker = function () {
-      var marker = {
+    scope.addPortal = function () {
+      var portal = {
         lat: scope.center.lat,
         lng: scope.center.lng,
-        message: 'Yolo',
+        message: 'Portal ' + scope.portals.length,
         focus: true,
         draggable: true
       };
 
-      scope.markers.push( marker );
+      scope.portals.push( portal );
     };
 
-    scope.deleteMarker = function ( index ) {
-      scope.markers.splice( index, 1 );
+    scope.deletePortal = function ( index ) {
+      scope.portals.splice( index, 1 );
     };
 
 
-
-    scope.$on( 'leafletDirectiveMap.popupopen', function( event ) {
-      console.log(event);
+    //Troubles getting the portal selected
+    scope.$on( 'leafletDirectiveMap.focus', function( event ) {
+      switch( scope.status ) {
+        case 'links':
+          break;
+        case 'fields':
+          break;
+      }
     });
     /*scope.paths = {
       polygon: {

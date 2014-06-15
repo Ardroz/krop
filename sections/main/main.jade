@@ -1,46 +1,111 @@
 .col-md-6
-  .row
-    button.btn.btn.lg.btn-success(
-      ng-click = 'addMarker()'
-    ) Añadir Marcador
-  .col-md-10
-    table.table
-      th
-        tr
-          td Marcador
-          td Latitud
-          td Longitud
-          td Acciones
+  ul.nav.nav-tabs
+    li.active
+      a(
+        data-target = '#portals'
+        data-toggle = 'tab'
+        ng-class = '{"active": status === "portals"}'
+        ng-click = 'status = "portals";'
+      ) Portals
+    li
+      a(
+        data-target = '#links'
+        data-toggle = 'tab'
+        ng-class = '{"active": status === "links"}'
+        ng-click = 'status = "links";'
+      ) Links
+    li
+      a(
+        data-target = '#fields'
+        data-toggle = 'tab'
+        ng-class = '{"active": status === "fields"}'
+        ng-click = 'status = "fields";'
+      ) Fields
 
-      tbody
-        tr(
-          ng-repeat = 'marker in markers'
-        )
-          td
-            input.col-md-12(
-              ng-model = 'marker.message'
+  .col-md-10
+    .tab-content
+      #portals.tab-pane.active
+        br
+        button.btn.btn.lg.btn-success(
+          ng-click = 'addPortal()'
+        ) Añadir Portal
+        br
+        table.table
+          th
+            tr
+              td Portal
+              td Latitud
+              td Longitud
+              td Acciones
+
+          tbody
+            tr(
+              ng-repeat = 'portal in portals'
             )
-          td(
-            ng-bind = 'marker.lat | number:3'
-          )
-          td(
-            ng-bind = 'marker.lng | number:3'
-          )
-          td
-            .btn-group
-              button.btn.btn-info(
-                ng-click = 'marker.draggable = !marker.draggable;'
-              ) *
-              button.btn.btn-danger(
-                ng-click = 'deleteMarker($index)'
-              ) -
+              td
+                input.col-md-12(
+                  ng-model = 'portal.message'
+                )
+              td(
+                ng-bind = 'portal.lat | number:3'
+              )
+              td(
+                ng-bind = 'portal.lng | number:3'
+              )
+              td
+                .btn-group
+                  button.btn(
+                    ng-class = '{"btn-default": !portal.draggable, "btn-success": portal.draggable}'
+                    ng-click = 'portal.draggable = !portal.draggable;'
+                  ) *
+                  button.btn.btn-danger(
+                    ng-click = 'deletePortal($index)'
+                  ) -
+      #links.tab-pane
+        br
+        button.btn.btn.lg.btn-success(
+          ng-click = 'addPortal()'
+        ) Añadir Portal
+        br
+        table.table
+          th
+            tr
+              td Portal
+              td Latitud
+              td Longitud
+              td Acciones
+
+          tbody
+            tr(
+              ng-repeat = 'portal in portals'
+            )
+              td
+                input.col-md-12(
+                  ng-model = 'portal.message'
+                )
+              td(
+                ng-bind = 'portal.lat | number:3'
+              )
+              td(
+                ng-bind = 'portal.lng | number:3'
+              )
+              td
+                .btn-group
+                  button.btn(
+                    ng-class = '{"btn-default": !portal.draggable, "btn-success": portal.draggable}'
+                    ng-click = 'portal.draggable = !portal.draggable;'
+                  ) *
+                  button.btn.btn-danger(
+                    ng-click = 'deletePortal($index)'
+                  ) -
+      #fields.tab-pane
 
 .col-md-6
   leaflet.pull-right(
     center = 'center'
     defaults = 'map'
     height = '480px'
-    markers = 'markers'
+    markers = 'portals'
     paths = 'paths'
     width = '640px'
   )
