@@ -10,7 +10,8 @@
     "express-less": "0.0.2",
     "jade": "~0.31.2",
     "mapbox.js": "^1.6.4",
-    "transformify": "~0.1.2"
+    "transformify": "~0.1.2",
+    "underscore": "^1.6.0"
   },
   "scripts": {
     "test": "grunt"

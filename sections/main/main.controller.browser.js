@@ -1,6 +1,7 @@
 /* jslint node: true */
 /* global L */
 'use strict';
+var __ = require('underscore')._;
 require('mapbox.js');
 
 module.exports = function ( angular, app ) {
@@ -8,16 +9,37 @@ module.exports = function ( angular, app ) {
 
   main.$inject = [ '$scope' ];
   function main ( scope ) {
-    angular.extend( scope, {
-      defaults: {
-          tileLayer: "http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png",
-          maxZoom: 1000,
-          path: {
-              weight: 10,
-              color: '#800000',
-              opacity: 1
-          }
+    scope.pathsCoords = [];
+    scope.map = {
+      tileLayer: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      maxZoom: 1000
+    };
+
+    scope.center =  {
+      autoDiscover: true
+    };
+
+    scope.markers = [];
+
+    scope.addMarker = function () {
+      var marker = {
+        lat: scope.center.lat,
+        lng: scope.center.lng,
+        message: 'Yolo',
+        focus: true,
+        draggable: true
+      };
+
+      scope.markers.push( marker );
+      scope.paths.polygon.latlngs.push(marker);
+    };
+
+    scope.paths = {
+      polygon: {
+        type: "polygon",
+        latlngs: []
       }
-    });
+    };
+
   }
 };
