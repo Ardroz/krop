@@ -7,8 +7,8 @@ require('mapbox.js');
 module.exports = function ( angular, app ) {
   app.controller( 'Main', main );
 
-  main.$inject = [ '$scope' ];
-  function main ( scope ) {
+  main.$inject = [ '$scope', 'leafletEvents' ];
+  function main ( scope, leafletEvents ) {
     scope.pathsCoords = [];
     scope.map = {
       tileLayer: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -37,12 +37,17 @@ module.exports = function ( angular, app ) {
       scope.markers.splice( index, 1 );
     };
 
-    scope.paths = {
+
+
+    scope.$on( 'leafletDirectiveMap.popupopen', function( event ) {
+      console.log(event);
+    });
+    /*scope.paths = {
       polygon: {
         type: "polygon",
         latlngs: []
       }
-    };
+    };*/
 
   }
 };
