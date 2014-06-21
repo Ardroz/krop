@@ -40,6 +40,12 @@ module.exports = function ( angular, app ) {
       scope.portals.splice( index, 1 );
     };
 
+    scope.createLink = function () {
+      if ( scope.linkTags.length === 2  ) {
+
+      }
+    };
+
 
     //Troubles getting the portal selected
     scope.$on( 'leafletDirectiveMap.focus', function( event ) {
@@ -50,12 +56,13 @@ module.exports = function ( angular, app ) {
           break;
       }
     });
-    /*scope.paths = {
-      polygon: {
-        type: "polygon",
-        latlngs: []
-      }
-    };*/
 
+    scope.paths = [];
+
+    scope.getPortals = function () {
+      return scope.portals.map( function ( portal ) {
+        return portal.message;
+      });
+    };
   }
 };

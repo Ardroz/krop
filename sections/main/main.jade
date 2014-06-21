@@ -63,31 +63,34 @@
                   ) -
       #links.tab-pane
         br
+        tags-input(
+          add-from-autocomplete-only = 'true'
+          ng-model = 'linkTags'
+          on-tag-added = 'createLink()'
+        )
+          autocomplete(
+            source = 'getPortals()'
+          )
         button.btn.btn.lg.btn-success(
-          ng-click = 'addPortal()'
-        ) Añadir Portal
+          ng-click = 'addLink()'
+        ) Nuevo Link
         br
         table.table
           th
             tr
-              td Portal
-              td Latitud
-              td Longitud
-              td Acciones
+              td Portal de salida
+              td Portal de entrada
 
           tbody
             tr(
-              ng-repeat = 'portal in portals'
+              ng-repeat = 'link in links'
             )
               td
                 input.col-md-12(
-                  ng-model = 'portal.message'
+                  ng-bind = 'link.latlngs[0].message'
                 )
               td(
-                ng-bind = 'portal.lat | number:3'
-              )
-              td(
-                ng-bind = 'portal.lng | number:3'
+                ng-bind = 'link.latlngs[1].message'
               )
               td
                 .btn-group

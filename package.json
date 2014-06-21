@@ -23,7 +23,8 @@
     "angular-resource": "./bower_components/angular-resource/angular-resource.js",
     "angular-route": "./bower_components/angular-route/angular-route.js",
     "angular-leaflet-directive": "./bower_components/angular-leaflet-directive/dist/angular-leaflet-directive.min.js",
-    "angular-bootstrap": "./bower_components/angular-bootstrap/ui-bootstrap-tpls.js"
+    "angular-bootstrap": "./bower_components/angular-bootstrap/ui-bootstrap-tpls.js",
+    "ng-tags-input": "./bower_components/ng-tags-input/ng-tags-input.min.js"
   },
   "browserify-shim": {
     "jquery": "$",
@@ -49,6 +50,11 @@
       ]
     },
     "angular-leaflet-directive": {
+      "depends": [
+        "angular:angular"
+      ]
+    },
+    "ng-tags-input": {
       "depends": [
         "angular:angular"
       ]

@@ -7,9 +7,11 @@ require('angular-route');
 require('bootstrap');
 require('angular-bootstrap');
 require('angular-leaflet-directive');
+require('ng-tags-input');
 
 var app = angular.module('krop', [
       'leaflet-directive',
+      'ngTagsInput',
       'ngRoute',
       'ui.bootstrap',
       'ngResource'
