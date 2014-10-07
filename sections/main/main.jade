@@ -1,4 +1,4 @@
-.col-md-6
+.col-md-3.lu
   ul.nav.nav-tabs
     li.active
       //comment
@@ -17,15 +17,17 @@
       ) Links
     li
       a(
-        data-target = '#fields'
+        data-target = '#steps'
         data-toggle = 'tab'
-        ng-class = '{"active": status === "fields"}'
-        ng-click = 'status = "fields";'
-      ) Fields
+        ng-class = '{"active": status === "steps"}'
+        ng-click = 'status = "steps";'
+      ) Pasos
 
-  .col-md-10
+  .col-md-12
     .tab-content
       #portals.tab-pane.active
+        br
+        input(type='file', ng-file-select='onFileSelect($files)')
         br
         button.btn.btn.lg.btn-success(
           ng-click = 'addPortal()'
@@ -35,8 +37,6 @@
           th
             tr
               td Portal
-              td Latitud
-              td Longitud
               td Acciones
 
           tbody
@@ -44,72 +44,68 @@
               ng-repeat = 'portal in portals'
             )
               td
-                input.col-md-12(
-                  ng-model = 'portal.message'
+                input(
+                  ng-model = 'portal.title'
                 )
-              td(
-                ng-bind = 'portal.lat | number:3'
-              )
-              td(
-                ng-bind = 'portal.lng | number:3'
-              )
               td
                 .btn-group
                   button.btn(
-                    ng-class = '{"btn-default": !portal.draggable, "btn-success": portal.draggable}'
-                    ng-click = 'portal.draggable = !portal.draggable;'
+                    ng-class = '{"btn-default": !portal.options.draggable, "btn-success": portal.options.draggable}'
+                    ng-click = 'portal.options.draggable = !portal.options.draggable;'
                   ) *
                   button.btn.btn-danger(
                     ng-click = 'deletePortal($index)'
                   ) -
+
       #links.tab-pane
         br
-        tags-input(
-          add-from-autocomplete-only = 'true'
-          ng-model = 'linkTags'
-          on-tag-added = 'createLink()'
+        button.btn.central(
+          ng-class = '{"btn-default": !creationForm, "btn-success": creationForm}'
+          ng-click = 'creationForm = !creationForm;'
+        ) Link don't think
+        br
+        br
+        label.form-control Portal de Salida
+        select.form-control(
+          ng-model = 'linkOut',
+          ng-options = 'portal as portal.title  for portal in portals | orderBy: "title"'
         )
-          autocomplete(
-            source = 'getPortals()'
-          )
+        label.form-control Portal Entrante
+        select.form-control(
+          ng-model = 'linkIn',
+          ng-options = 'portal as portal.title  for portal in portals | orderBy: "title"'
+        )
         button.btn.btn.lg.btn-success(
           ng-click = 'addLink()'
         ) Nuevo Link
         br
-        table.table
-          th
-            tr
-              td Portal de salida
-              td Portal de entrada
+        h4 Links
+        .thumbnail( ng-repeat = 'link in links')
+          .caption
+            p( ng-bind = ' link.nameLinkOut' )
+            p( ng-bind = 'link.nameLinkIn')
+            button.btn(
+              ng-click = ' invert( link )'
+            ) Invertir
+            button.btn.btn-danger(
+              ng-click = 'deleteLink($index)'
+            ) Eliminar -
 
-          tbody
-            tr(
-              ng-repeat = 'link in links'
-            )
-              td
-                input.col-md-12(
-                  ng-bind = 'link.latlngs[0].message'
-                )
-              td(
-                ng-bind = 'link.latlngs[1].message'
-              )
-              td
-                .btn-group
-                  button.btn(
-                    ng-class = '{"btn-default": !portal.draggable, "btn-success": portal.draggable}'
-                    ng-click = 'portal.draggable = !portal.draggable;'
-                  ) *
-                  button.btn.btn-danger(
-                    ng-click = 'deletePortal($index)'
-                  ) -
-      #fields.tab-pane
+      #steps.tab-pane
+        .thumbnail
+          .caption
+            form( name = 'conclutionsForm' )
+              span Step
+              input.form-control(type='text')
+              .btn-group
+                button.btn.btn-default(type='button') Go!
+                button.btn.btn-default.btn-lg(type='button')
+                  span.glyphicon.glyphicon-arrow-up
+                button.btn.btn-default.btn-lg(type='button')
+                  span.glyphicon.glyphicon-arrow-down
+            p hola
 
-.col-md-6
-  leaflet.pull-right(
-    center = 'center'
-    defaults = 'map'
-    height = '480px'
-    markers = 'portals'
-    paths = 'paths'
-    width = '640px'
-  )
+.col-md-9.yolo
+  google-map(center='map.center', zoom='map.zoom', draggable='true', options='options')
+    markers(models='portals', coords='"self"', click='"onClicked"', options='"options"', events='portalsEvents')
+    polyline(ng-repeat='p in links', path='p.path', stroke='p.stroke', visible='p.visible', geodesic='p.geodesic', fit='false', editable='p.editable', draggable='p.draggable', icons='p.icons')

@@ -7,7 +7,7 @@ module.exports = function ( app ) {
   config.$inject = ['$routeProvider'];
   function config ( routeProvider ) {
     routeProvider
-      .when( '/view1', {
+      .when( '/Portals', {
         controller: 'Main',
         templateUrl : '/html/main/main.html'
       });
