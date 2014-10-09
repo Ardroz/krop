@@ -109,3 +109,4 @@
   google-map(center='map.center', zoom='map.zoom', draggable='true', options='options')
     markers(models='portals', coords='"self"', click='"onClicked"', options='"options"', events='portalsEvents')
     polyline(ng-repeat='p in links', path='p.path', stroke='p.stroke', visible='p.visible', geodesic='p.geodesic', fit='false', editable='p.editable', draggable='p.draggable', icons='p.icons')
+    polygon(static='true', ng-repeat='p in controlFields track by p.id', path='p.path', stroke='p.stroke', visible='p.visible', geodesic='p.geodesic', fill='p.fill', fit='false', editable='p.editable', draggable='p.draggable')
