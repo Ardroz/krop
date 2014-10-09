@@ -92,18 +92,18 @@
             ) Eliminar -
 
       #steps.tab-pane
-        .thumbnail
+        button.btn.btn-primary(
+          ng-click = 'simulate()'
+        ) Simular
+        .thumbnail( ng-repeat = 'step in steps | orderBy: "order"' )
+          p( class = '{{red}}-ribbon')
+          p( class = '{{ step.type === "comment" && "comment-ribbon" || step.type === "link" && "link-ribbon" || "portal-ribbon"}}')
           .caption
-            form( name = 'conclutionsForm' )
-              span Step
-              input.form-control(type='text')
-              .btn-group
-                button.btn.btn-default(type='button') Go!
-                button.btn.btn-default.btn-lg(type='button')
-                  span.glyphicon.glyphicon-arrow-up
-                button.btn.btn-default.btn-lg(type='button')
-                  span.glyphicon.glyphicon-arrow-down
-            p hola
+            span Step
+            input.form-control(
+              ng-model = 'step.order'
+              type='number')
+            p( ng-bind = 'step.description')
 
 .col-md-9.yolo
   google-map(center='map.center', zoom='map.zoom', draggable='true', options='options')
