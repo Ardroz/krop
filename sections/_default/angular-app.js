@@ -18,7 +18,8 @@ var app = angular.module('krop', [
       'ui.bootstrap',
       'ngResource',
       'google-maps',
-      'angularFileUpload'
+      'angularFileUpload',
+      'services.Base64'
     ]);
 app.config(function ($routeProvider) {
   $routeProvider.otherwise({redirectTo : '/view1'});

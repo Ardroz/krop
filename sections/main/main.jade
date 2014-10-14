@@ -31,7 +31,37 @@
         br
         button.btn.btn.lg.btn-success(
           ng-click = 'addPortal()'
-        ) Añadir Portal
+        ) Nuevo Portal
+        form(
+          ng-hide = 'hideNewportal'
+          role='form'
+          ng-submit = 'saveNewPortal()'
+          novalidate
+        )
+          .form-group
+            label Nombre
+            input.form-control(
+              type='text'
+              placeholder='Nombre del portal'
+              ng-model = 'newPortal.name')
+          .form-group
+            label Latitud
+            input.form-control(
+              placeholder='latitud'
+              type = 'number'
+              ng-model = 'newPortal.latitude'
+            )
+          .form-group
+            label Longitud
+            input.form-control(
+              type = 'number'
+              placeholder='latitud'
+              ng-model = 'newPortal.longitude'
+            )
+            p.help-block Buen Ingress
+          button.btn.btn-default(
+            type='submit' ) Submit
+
         br
         table.table
           th
@@ -95,18 +125,19 @@
         button.btn.btn-primary(
           ng-click = 'simulate()'
         ) Simular
-        .thumbnail( ng-repeat = 'step in steps | orderBy: "order"' )
-          p( class = '{{red}}-ribbon')
-          p( class = '{{ step.type === "comment" && "comment-ribbon" || step.type === "link" && "link-ribbon" || "portal-ribbon"}}')
-          .caption
-            span Step
-            input.form-control(
+        .thumbnail( ng-repeat = 'step in steps | orderBy: "order"'
+        ( class = '{{ step.type === "comment" && "comment-ribbon" || step.type === "link" && "link-ribbon" || "portal-ribbon"}}'))
+          span.pull-right
+            label Step
+            input.pull-right(
               ng-model = 'step.order'
               type='number')
-            p( ng-bind = 'step.description')
+          p.clearfix
+          p( ng-bind = 'step.description')
 
 .col-md-9.yolo
   google-map(center='map.center', zoom='map.zoom', draggable='true', options='options')
+    marker(coords='marker.coords', icon='marker.icon', options='marker.options', events='marker.events', idkey='marker.id')
     markers(models='portals', coords='"self"', click='"onClicked"', options='"options"', events='portalsEvents')
     polyline(ng-repeat='p in links', path='p.path', stroke='p.stroke', visible='p.visible', geodesic='p.geodesic', fit='false', editable='p.editable', draggable='p.draggable', icons='p.icons')
     polygon(static='true', ng-repeat='p in controlFields track by p.id', path='p.path', stroke='p.stroke', visible='p.visible', geodesic='p.geodesic', fill='p.fill', fit='false', editable='p.editable', draggable='p.draggable')
