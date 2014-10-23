@@ -123,8 +123,11 @@
 
       #steps.tab-pane
         button.btn.btn-primary(
-          ng-click = 'simulate()'
+          ng-click = 'simulateInitialization()'
         ) Simular
+        button.btn.btn-danger(
+          ng-click = 'stopSimulate()'
+        ) Detener
         .thumbnail( ng-repeat = 'step in steps | orderBy: "order"'
         ( class = '{{ step.type === "comment" && "comment-ribbon" || step.type === "link" && "link-ribbon" || "portal-ribbon"}}'))
           span.pull-right

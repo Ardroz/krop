@@ -18,7 +18,10 @@ module.exports = function ( angular, app ) {
     scope.linkIn = {};
     scope.linkOut = {};
     scope.steps = [];
-    scope.controlFields = [   ];
+    scope.controlFields = [];
+    scope.portals = [];
+    scope.linkOut = {};
+    scope.linkIn = {};
     var cfMonkeyFace = [];
     var linksMonkeyFace = [];
     var uniquesLinks=[];
@@ -27,35 +30,77 @@ module.exports = function ( angular, app ) {
     var matrix;
     var countSimulate;
     var portalsSimulate;
-    var linksSimulate;
+    var linksSimulate,
+      idLink = 0,
+      idOrder = 0,
+      timeoutPromise;
 
     scope.portals = [];
     scope.hideNewportal = 'true';
     scope.newPortal = {};
     scope.marker = {
-          id:0,
-          coords: {
-              latitude: scope.newPortal.latitude,
-              longitude: scope.newPortal.longitude
-          },
-          icon:  '/images/symbol_infinite.png',
-          options: { draggable: true },
-          events: {
-              dragend: function (marker, eventName, args) {
-                scope.newPortal.latitude = marker.getPosition().lat();
-                scope.newPortal.longitude = marker.getPosition().lng();
-                  log.log('marker dragend');
-                  log.log(marker.getPosition().lat());
-                  log.log(marker.getPosition().lng());
-                  scope.$apply();
-              }
+      id:0,
+      coords: {
+          latitude: scope.newPortal.latitude,
+          longitude: scope.newPortal.longitude
+      },
+      icon:  '/images/symbol_infinite.png',
+      options: { draggable: true },
+      events: {
+          dragend: function (marker, eventName, args) {
+            scope.newPortal.latitude = marker.getPosition().lat();
+            scope.newPortal.longitude = marker.getPosition().lng();
+              log.log('marker dragend');
+              log.log(marker.getPosition().lat());
+              log.log(marker.getPosition().lng());
+              scope.$apply();
           }
-      };
+      }
+    };
+
+    ///////////////////////
+    //Map initialization //
+    ///////////////////////
+
+    scope.map = {
+      center: {
+        latitude: 45,
+        longitude: -73
+      },
+      zoom: 13
+    };
+
+    scope.portalsEvents = {
+      click: function (gMarker, eventName, model) {
+        if(model.$id){
+          model = model.coords;//use scope portion then
+        }
+        if( scope.creationForm ){
+          if( !scope.linkOut.title ){
+            scope.linkOut = model;
+            console.log(model);
+            scope.$apply();
+          } else {
+            if( scope.linkOut !== model){
+              scope.linkIn = model;
+              scope.$apply();
+              scope.addLink();
+            }
+          }
+        } else {
+          alert("Model: event:" + eventName + " " + JSON.stringify(model));
+        }
+      }
+    };
 
     scope.$watch( 'newPortal', function  () {
       scope.marker.coords.latitude = scope.newPortal.latitude;
       scope.marker.coords.longitude = scope.newPortal.longitude;
     },true);
+
+    ////////////////////
+    // Portals Section //
+    ////////////////////
 
 
     scope.addPortal = function () {
@@ -81,16 +126,6 @@ module.exports = function ( angular, app ) {
         title: scope.newPortal.name
       };
       scope.portals.push( portalMarker);
-
-      var stepActivatePortal = {
-        description : 'Activar ' + scope.newPortal.name,
-        order : 1,
-        type : 'portal',
-        name: scope.newPortal.name,
-        portal: portalMarker
-      };
-
-      scope.steps.push( stepActivatePortal );
       scope.newPortal = {};
       scope.hideNewportal = 'true';
     };
@@ -100,8 +135,8 @@ module.exports = function ( angular, app ) {
       reader.readAsBinaryString(files[0]);
 
       reader.addEventListener('load', function (x) {
-        var i, fileContent;
 
+        var i, fileContent;
         fileContent = x.target.result;
         scope.csvPreview = utils.csvToArray(fileContent, 'utf-8');
         scope.csvPreview.splice(0,1);
@@ -119,17 +154,6 @@ module.exports = function ( angular, app ) {
             title: portal[1]
           };
           scope.portals.push( portalMarker);
-
-          var stepActivatePortal = {
-            description : 'Activar ' + portal[1],
-            order : parseInt( portal[0],10),
-            type : 'portal',
-            name: portal[1],
-            portal: portalMarker
-          };
-
-          scope.steps.push( stepActivatePortal );
-
         });
         scope.map.center.latitude =scope.portals[1].latitude;
         scope.map.center.longitude =scope.portals[0].longitude;
@@ -140,14 +164,20 @@ module.exports = function ( angular, app ) {
     scope.deletePortal = function ( index ) {
       scope.portals.splice( index, 1 );
     };
+
+    ///////////////////
+    // Links Section //
+    ///////////////////
+
     scope.deleteLink = function ( index ) {
       scope.links.splice( index, 1 );
     };
+
     scope.addLink = function () {
       var newLink = {
         nameLinkOut: scope.linkOut.title,
         nameLinkIn: scope.linkIn.title,
-          id: scope.links[scope.links.length] ? scope.links[scope.links.length].id + 1:1 ,
+          id: idLink ,
           path: [
               {
                   latitude: scope.linkIn.latitude,
@@ -168,55 +198,24 @@ module.exports = function ( angular, app ) {
           visible: true
       };
 
-      var stepActivatePortal = {
+      var stepMakeLink = {
         description : 'Link ' + scope.linkOut.title + ' a ' + scope.linkIn.title,
-        order : scope.steps[ scope.steps.length - 1 ].order + 1,
+        order : idOrder,
         type : 'link',
-        linkOut: scope.linkOut.title,
-        linkIn: scope.linkIn.title,
+        linkOut: scope.linkOut,
+        linkIn: scope.linkIn,
         link: newLink
       };
+
       scope.links.push(newLink);
+      idLink++;
       scope.linkIn = {};
       scope.linkOut = {};
-
-      scope.steps.push( stepActivatePortal );
+      scope.steps.push( stepMakeLink );
+      idOrder++;
       scope.$apply();
-
-
+      console.log( scope.links );
     };
-
-    scope.map = {
-      center: {
-        latitude: 45,
-        longitude: -73
-      },
-      zoom: 13
-    };
-
-    scope.portalsEvents = {
-          click: function (gMarker, eventName, model) {
-            if(model.$id){
-              model = model.coords;//use scope portion then
-            }
-            if( scope.creationForm ){
-              if( !scope.linkOut.title ){
-                scope.linkOut = model;
-                scope.$apply();
-              } else {
-                scope.linkIn = model;
-                scope.$apply();
-                scope.addLink();
-              }
-            } else {
-              alert("Model: event:" + eventName + " " + JSON.stringify(model));
-            }
-
-          }
-        };
-
-
-    scope.portals = [];
 
     scope.invert = function ( link ) {
       var toluca;
@@ -226,13 +225,18 @@ module.exports = function ( angular, app ) {
     };
 
 
-    //Troubles getting the portal selected
+    ///////////////
+    //Simulation //
+    ///////////////
 
-    scope.stepsInSteps = function  () {
+    scope.stopSimulate = function  () {
+      scope.portals = portalsSimulate;
+      scope.links = linksSimulate;
+      timeout.cancel( timeoutPromise );
+      console.log('ghola');
     };
 
-
-    scope.simulate = function  () {
+    scope.simulateInitialization = function  () {
       matrix = __.sortBy( scope.steps, function  ( steps ) {
         return steps.order;
       });
@@ -244,17 +248,18 @@ module.exports = function ( angular, app ) {
       scope.controlFields = [];
       cfMonkeyFace = [];
       linksMonkeyFace =[];
-
+      uniquesLinks = [];
+      portalMonkeyFace = [];
       countSimulate = 0;
-      timeout(Simulation, 800);
+      timeoutPromise = timeout(simulation, 800);
     };
 
-    var Simulation = function() {
+    var simulation = function() {
 
       if(matrix[countSimulate].type === 'portal'){
         scope.portals.push( matrix[countSimulate].portal);
       }
-      if(matrix[countSimulate].type === 'link'){
+      else if(matrix[countSimulate].type === 'link'){
         scope.links.push( matrix[countSimulate].link);
       }
 
@@ -272,36 +277,36 @@ module.exports = function ( angular, app ) {
           flag = false;
           if( links.length < 3) {
             if( links.length === 1) {
-              if( links[0][0] === matrix[countSimulate].linkIn ){
-                links.push([matrix[countSimulate].linkIn,matrix[countSimulate].linkOut]);
+              if( links[0][0] === matrix[countSimulate].linkIn.id ){
+                links.push([matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id]);
                 flag = true;
                 flaglucas = links[0][1];
-                flaglucas2 = matrix[countSimulate].linkOut;
+                flaglucas2 = matrix[countSimulate].linkOut.id;
               }
-              else if ( links[0][1] === matrix[countSimulate].linkIn ){
-                links.push([matrix[countSimulate].linkIn,matrix[countSimulate].linkOut]);
+              else if ( links[0][1] === matrix[countSimulate].linkIn.id ){
+                links.push([matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id]);
                 flag = true;
                 flaglucas = links[0][0];
-                flaglucas2 = matrix[countSimulate].linkOut;
+                flaglucas2 = matrix[countSimulate].linkOut.id;
               }
-              else if ( links[0][0] === matrix[countSimulate].linkOut ){
-                links.push([matrix[countSimulate].linkIn,matrix[countSimulate].linkOut]);
+              else if ( links[0][0] === matrix[countSimulate].linkOut.id ){
+                links.push([matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id]);
                 flag = true;
                 flaglucas = links[0][1];
-                flaglucas2 = matrix[countSimulate].linkIn;
+                flaglucas2 = matrix[countSimulate].linkIn.id;
               }
-              else if ( links[0][1] === matrix[countSimulate].linkOut ){
-                links.push([matrix[countSimulate].linkIn,matrix[countSimulate].linkOut]);
+              else if ( links[0][1] === matrix[countSimulate].linkOut.id ){
+                links.push([matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id]);
                 flag = true;
                 flaglucas = links[0][0];
-                flaglucas2 = matrix[countSimulate].linkIn;
+                flaglucas2 = matrix[countSimulate].linkIn.id;
               }
               if(flag){
                 __.map( uniquesLinks, function  ( lin ) {
                   if( flaglucas === lin[0] || flaglucas === lin[1] ){
                     if( flaglucas2 === lin[0] || flaglucas2 === lin[1]  ){
                       links.push([lin[1],lin[0]]);
-                      pushportal([matrix[countSimulate].linkIn,matrix[countSimulate].linkOut],links[0]);
+                      pushControlField([matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id],links[0]);
                     }
                   }
                 });
@@ -309,11 +314,20 @@ module.exports = function ( angular, app ) {
             }
 
             else {
-              if( links[0][0] === matrix[countSimulate].linkIn || links[0][1] === matrix[countSimulate].linkIn || links[1][0] === matrix[countSimulate].linkIn || links[1][1] === matrix[countSimulate].linkIn ){
-                if( links[0][0] === matrix[countSimulate].linkOut || links[0][1] === matrix[countSimulate].linkOut || links[1][0] === matrix[countSimulate].linkOut || links[1][1] === matrix[countSimulate].linkOut ){
-                  links.push([matrix[countSimulate].linkIn,matrix[countSimulate].linkOut]);
-                  pushportal(links[0],links[1]);
-
+              if(
+                links[0][0] === matrix[countSimulate].linkIn.id ||
+                links[0][1] === matrix[countSimulate].linkIn.id ||
+                links[1][0] === matrix[countSimulate].linkIn.id ||
+                links[1][1] === matrix[countSimulate].linkIn.id
+              ){
+                if(
+                  links[0][0] === matrix[countSimulate].linkOut.id ||
+                  links[0][1] === matrix[countSimulate].linkOut.id ||
+                  links[1][0] === matrix[countSimulate].linkOut.id ||
+                  links[1][1] === matrix[countSimulate].linkOut.id
+                ){
+                  links.push([matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id]);
+                  pushControlField(links[0],links[1]);
                 }
               }
             }
@@ -322,21 +336,22 @@ module.exports = function ( angular, app ) {
 
           });
 
-          if( counts > 2) {
-
-          }
-          uniquesLinks.push( [matrix[countSimulate].linkIn,matrix[countSimulate].linkOut]);
-          linksMonkeyFace.push( [[matrix[countSimulate].linkIn,matrix[countSimulate].linkOut]]);
+          uniquesLinks.push( [matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id]);
+          linksMonkeyFace.push( [[matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id]]);
       }
       countSimulate++;
       console.log('llllllll');
       console.log(cfMonkeyFace);
       console.log(linksMonkeyFace);
-      timeout(Simulation, 800);
+      console.log( matrix.length);
+      console.log(countSimulate);
+      if( matrix.length !== countSimulate ){
+        timeoutPromise = timeout(simulation, 800);
+      } 
     };
 
-
-    var pushportal = function  (link1,link2) {
+    //This function is used to go adding portals within the simulation
+    var pushControlField = function  (link1,link2) {
 
       var cf = [];
       var flag;
@@ -366,26 +381,26 @@ module.exports = function ( angular, app ) {
             path: [
                 {
                     latitude: __.find( portalsSimulate, function  ( portal ) {
-                      return cf[0] === portal.title;
+                      return cf[0] === portal.id;
                     }).latitude,
                     longitude: __.find( portalsSimulate, function  ( portal ) {
-                      return cf[0] === portal.title;
+                      return cf[0] === portal.id;
                     }).longitude
                 },
                 {
                     latitude: __.find( portalsSimulate, function  ( portal ) {
-                      return cf[1] === portal.title;
+                      return cf[1] === portal.id;
                     }).latitude,
                     longitude: __.find( portalsSimulate, function  ( portal ) {
-                      return cf[1] === portal.title;
+                      return cf[1] === portal.id;
                     }).longitude
                 },
                 {
                     latitude: __.find( portalsSimulate, function  ( portal ) {
-                      return cf[2] === portal.title;
+                      return cf[2] === portal.id;
                     }).latitude,
                     longitude: __.find( portalsSimulate, function  ( portal ) {
-                      return cf[2] === portal.title;
+                      return cf[2] === portal.id;
                     }).longitude
                 }
             ],
@@ -408,11 +423,9 @@ module.exports = function ( angular, app ) {
       return;
     };
 
-    scope.getPortals = function () {
-      return scope.portals.map( function ( portal ) {
-        return portal.message;
-      });
-    };
+    /////////////////////
+    // Create document //
+    /////////////////////
 
     scope.CSVData = "First, &Last, Middle\n" +
     "Senior,'lu,;ol &Tervor',& M\n" +
