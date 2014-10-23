@@ -8,35 +8,20 @@ section(
   )
     md-toolbar.md-theme-indigo
       h3.md-toolbar-tools.kraken-background KROP
-      //-  md-button.md-button-colored(
-      //-    ng-click = 'closeSidebar()'
-      //-  ) X
     md-content
       md-tabs( selected = '0' )
         md-tab(
           label = 'Portales'
         )
-          div(
-            layout = 'vertical'
-            layout-align = 'center center'
-          )
-            h1 Portales
+          include partials/portals
         md-tab(
           label = 'Links'
         )
-          div(
-            layout = 'vertical'
-            layout-align = 'center center'
-          )
-            h1 Links
+          include partials/links
         md-tab(
           label = 'Simulación'
         )
-          div(
-            layout = 'vertical'
-            layout-align = 'center center'
-          )
-            h1 Simulación
+          include partials/simulation
   md-content.md-content( flex )
     google-map(
       center = 'map.center'
