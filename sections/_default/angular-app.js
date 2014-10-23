@@ -11,11 +11,14 @@ require('angular-maps-lodash');
 require('angular-maps-directive');
 require('angular-file-upload-shim');
 require('angular-file-upload');
+require('angular-aria');
+require('angular-animate');
+require('angular-material');
 
 var app = angular.module('krop', [
-      'ngTagsInput',
+      'ngAnimate',
+      'ngMaterial',
       'ngRoute',
-      'ui.bootstrap',
       'ngResource',
       'google-maps',
       'angularFileUpload',
