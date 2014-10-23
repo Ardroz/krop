@@ -265,7 +265,9 @@ module.exports = function ( angular, app ) {
 
       var flag;
       var flaglucas;
-      var flaglucas2;
+      var flaglucas2,
+        portalRep1,
+        portalRep2;
 
       if( matrix[countSimulate].type === 'portal' ){
         portalMonkeyFace.push( matrix[countSimulate].name );
@@ -273,72 +275,104 @@ module.exports = function ( angular, app ) {
       else if ( matrix[countSimulate].type === 'link' ){
         counts = 0;
 
-        __.map( linksMonkeyFace, function  ( links ) {
-          flag = false;
-          if( links.length < 3) {
-            if( links.length === 1) {
-              if( links[0][0] === matrix[countSimulate].linkIn.id ){
-                links.push([matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id]);
-                flag = true;
-                flaglucas = links[0][1];
+        __.map( uniquesLinks, function  ( links ) {
+          if(
+            links[0] === matrix[countSimulate].linkIn.id ||
+            links[1] === matrix[countSimulate].linkIn.id ||
+            links[0] === matrix[countSimulate].linkOut.id ||
+            links[1] === matrix[countSimulate].linkOut.id
+          ){
+            if(__.contains( [matrix[countSimulate].linkIn.id, matrix[countSimulate].linkOut.id], links[0])) {
+              portalRep1 =links[0];
+              flaglucas = links[1];
+              if(__.contains( [ links[0],links[1]], matrix[countSimulate].linkIn.id)) {
                 flaglucas2 = matrix[countSimulate].linkOut.id;
-              }
-              else if ( links[0][1] === matrix[countSimulate].linkIn.id ){
-                links.push([matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id]);
-                flag = true;
-                flaglucas = links[0][0];
-                flaglucas2 = matrix[countSimulate].linkOut.id;
-              }
-              else if ( links[0][0] === matrix[countSimulate].linkOut.id ){
-                links.push([matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id]);
-                flag = true;
-                flaglucas = links[0][1];
+                portalRep2 = matrix[countSimulate].linkIn.id;
+              } else {
+                portalRep2 = matrix[countSimulate].linkOut.id;
                 flaglucas2 = matrix[countSimulate].linkIn.id;
               }
-              else if ( links[0][1] === matrix[countSimulate].linkOut.id ){
-                links.push([matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id]);
-                flag = true;
-                flaglucas = links[0][0];
+            } else {
+              portalRep1 =links[1];
+              flaglucas = links[0];
+              if(__.contains( [ links[0],links[1]], matrix[countSimulate].linkIn.id)) {
+                flaglucas2 = matrix[countSimulate].linkOut.id;
+                portalRep2 = matrix[countSimulate].linkIn.id;
+              } else {
+                portalRep2 = matrix[countSimulate].linkOut.id;
                 flaglucas2 = matrix[countSimulate].linkIn.id;
-              }
-              if(flag){
-                __.map( uniquesLinks, function  ( lin ) {
-                  if( flaglucas === lin[0] || flaglucas === lin[1] ){
-                    if( flaglucas2 === lin[0] || flaglucas2 === lin[1]  ){
-                      links.push([lin[1],lin[0]]);
-                      pushControlField([matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id],links[0]);
-                    }
-                  }
-                });
               }
             }
-
-            else {
-              if(
-                links[0][0] === matrix[countSimulate].linkIn.id ||
-                links[0][1] === matrix[countSimulate].linkIn.id ||
-                links[1][0] === matrix[countSimulate].linkIn.id ||
-                links[1][1] === matrix[countSimulate].linkIn.id
-              ){
-                if(
-                  links[0][0] === matrix[countSimulate].linkOut.id ||
-                  links[0][1] === matrix[countSimulate].linkOut.id ||
-                  links[1][0] === matrix[countSimulate].linkOut.id ||
-                  links[1][1] === matrix[countSimulate].linkOut.id
-                ){
-                  links.push([matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id]);
-                  pushControlField(links[0],links[1]);
+            flag = false;
+            __.map( uniquesLinks, function  ( lin ) {
+              if( flaglucas === lin[0] || flaglucas === lin[1] ){
+                if( flaglucas2 === lin[0] || flaglucas2 === lin[1]  ){
+                  flag = true;
                 }
               }
+            });
+            if( flag ) {
+              linksMonkeyFace.push(
+                [
+                  [links[0],links[1]],
+                  [matrix[countSimulate].linkIn.id, matrix[countSimulate].linkOut.id],
+                  [portalRep1,portalRep2]
+                ]
+              );
+              pushControlField(
+                [links[0],links[1]],
+                [matrix[countSimulate].linkIn.id, matrix[countSimulate].linkOut.id]
+              );
+            } else {
+              linksMonkeyFace.push(
+                [
+                  [links[0],links[1]],
+                  [ matrix[countSimulate].linkIn.id , matrix[countSimulate].linkOut.id ]
+                ]
+              );
             }
-
           }
-
+        });
+      }
+      __.map( linksMonkeyFace, function  ( links ) {
+        if ( links.length === 2 ){
+          if(__.contains( [links[0][0],links[0][1]], links[1][0])) {
+            portalRep1 = links[1][0];
+            flaglucas = links[1][1];
+            if( __.contains( [links[1][0],links[1][1]], links[0][0]) ) {
+              flaglucas2 = links[0][1];
+              portalRep2 = links[0][0];
+            } else {
+              portalRep2 = links[0][1];
+              flaglucas2 = links[0][0];
+            }
+          } else {
+            portalRep1 = links[1][1];
+            flaglucas = links[1][0];
+            if( __.contains( [links[1][0],links[1][1]], links[0][0]) ) {
+              flaglucas2 = links[0][1];
+              portalRep2 = links[0][0];
+            } else {
+              portalRep2 = links[0][1];
+              flaglucas2 = links[0][0];
+            }
+          }
+          flag = false;
+          __.map( uniquesLinks, function  ( lin ) {
+            if( flaglucas === lin[0] || flaglucas === lin[1] ){
+              if( flaglucas2 === lin[0] || flaglucas2 === lin[1]  ){
+                flag = true;
+              }
+            }
           });
 
-          uniquesLinks.push( [matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id]);
-          linksMonkeyFace.push( [[matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id]]);
-      }
+          if( flag ) {
+            links.push( [flaglucas,flaglucas2] );
+            pushControlField( links[0],links[1] );
+          }
+        }
+      });
+      uniquesLinks.push( [matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id]);
       countSimulate++;
       console.log('llllllll');
       console.log(cfMonkeyFace);
@@ -347,7 +381,7 @@ module.exports = function ( angular, app ) {
       console.log(countSimulate);
       if( matrix.length !== countSimulate ){
         timeoutPromise = timeout(simulation, 800);
-      } 
+      }
     };
 
     //This function is used to go adding portals within the simulation
