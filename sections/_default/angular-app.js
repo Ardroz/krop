@@ -2,36 +2,40 @@
 'use strict';
 var di = require('di');
 var angular = require('angular');
-require('angular-resource');
-require('angular-route');
-require('bootstrap');
-require('angular-bootstrap');
-require('ng-tags-input');
-require('angular-maps-lodash');
-require('angular-maps-directive');
+require('angular-animate');
+require('angular-aria');
 require('angular-file-upload-shim');
 require('angular-file-upload');
-require('angular-aria');
-require('angular-animate');
+require('angular-maps-directive');
+require('angular-maps-lodash');
 require('angular-material');
+require('angular-resource');
+require('angular-route');
 
 var app = angular.module('krop', [
-      'ngAnimate',
-      'ngMaterial',
-      'ngRoute',
-      'ngResource',
-      'google-maps',
-      'angularFileUpload',
-      'services.Base64'
-    ]);
-app.config(function ($routeProvider) {
-  $routeProvider.otherwise({redirectTo : '/view1'});
-});
+    'angularFileUpload',
+    'google-maps',
+    'ngAnimate',
+    'ngMaterial',
+    'ngResource',
+    'ngRoute',
+    'services.Base64'
+  ]);
+
+app.config( config );
+
+config.$inject = ['$routeProvider'];
+function config ( routeProvider ) {
+  routeProvider.otherwise( {
+    redirectTo : '/'
+  });
+}
 
 var uiModules = {
   angular   : [ 'value', angular ],
   app       : [ 'value', app ]
 };
+
 uiModules.uiModules = [ 'value', uiModules ];
 
 var injector = new di.Injector([uiModules]);

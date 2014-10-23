@@ -17,25 +17,22 @@
     "test": "grunt"
   },
   "browser": {
-    "jquery": "./bower_components/jquery/dist/jquery.js",
-    "angular": "./bower_components/angular/angular.js",
-    "bootstrap": "./bower_components/bootstrap/dist/js/bootstrap.js",
-    "angular-resource": "./bower_components/angular-resource/angular-resource.js",
-    "angular-route": "./bower_components/angular-route/angular-route.js",
-    "angular-leaflet-directive": "./bower_components/angular-leaflet-directive/dist/angular-leaflet-directive.min.js",
-    "angular-bootstrap": "./bower_components/angular-bootstrap/ui-bootstrap-tpls.js",
-    "ng-tags-input": "./bower_components/ng-tags-input/ng-tags-input.min.js",
+    "angular-animate": "./bower_components/angular-animate/angular-animate.min.js",
+    "angular-aria": "./bower_components/angular-aria/angular-aria.min.js",
+    "angular-file-upload-shim": "./bower_components/ng-file-upload/angular-file-upload-shim.min.js",
+    "angular-file-upload": "./bower_components/ng-file-upload/angular-file-upload.min.js",
     "angular-maps-directive": "./bower_components/angular-google-maps/dist/angular-google-maps.min.js",
     "angular-maps-lodash": "./bower_components/lodash/dist/lodash.underscore.min.js",
-    "angular-file-upload": "./bower_components/ng-file-upload/angular-file-upload.min.js",
-    "angular-file-upload-shim": "./bower_components/ng-file-upload/angular-file-upload-shim.min.js",
-    "angular-animate": "./bower_components/angular-animate/angular-animate.min.js",
-    "hammerjs": "./bower_components/hammerjs/hammer.min.js",
     "angular-material": "./bower_components/angular-material/angular-material.min.js",
-    "angular-aria": "./bower_components/angular-aria/angular-aria.min.js"
+    "angular-resource": "./bower_components/angular-resource/angular-resource.js",
+    "angular-route": "./bower_components/angular-route/angular-route.js",
+    "angular": "./bower_components/angular/angular.js",
+    "hammerjs": "./bower_components/hammerjs/hammer.min.js",
+    "jquery": "./bower_components/jquery/dist/jquery.js"
   },
   "browserify-shim": {
     "jquery": "$",
+    "hammerjs": "Hammer",
     "angular": {
       "exports": "angular",
       "depends": [
@@ -68,11 +65,6 @@
         "angular-maps-lodash:_"
       ]
     },
-    "angular-bootstrap": {
-      "depends": [
-        "angular:angular"
-      ]
-    },
     "angular-resource": {
       "depends": [
         "angular:angular"
@@ -83,27 +75,11 @@
         "angular:angular"
       ]
     },
-    "angular-leaflet-directive": {
-      "depends": [
-        "angular:angular"
-      ]
-    },
-    "ng-tags-input": {
-      "depends": [
-        "angular:angular"
-      ]
-    },
-    "bootstrap": {
-      "depends": [
-        "jquery:$"
-      ]
-    },
     "angular-animate": {
       "depends": [
         "angular:angular"
       ]
     },
-    "hammerjs": "Hammer",
     "angular-material": {
       "depends": [
         "angular:angular",

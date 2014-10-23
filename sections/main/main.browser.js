@@ -7,9 +7,13 @@ module.exports = function ( app ) {
   config.$inject = ['$routeProvider'];
   function config ( routeProvider ) {
     routeProvider
-      .when( '/Portals', {
+      .when( '/', {
         controller: 'Main',
         templateUrl : '/html/main/main.html'
+      })
+      .when( '/material', {
+        controller: 'Main',
+        templateUrl : '/html/main/material.html'
       });
   }
 };

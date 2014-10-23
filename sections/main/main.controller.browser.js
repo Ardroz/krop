@@ -22,18 +22,19 @@ module.exports = function ( angular, app ) {
     scope.portals = [];
     scope.linkOut = {};
     scope.linkIn = {};
-    var cfMonkeyFace = [];
-    var linksMonkeyFace = [];
-    var uniquesLinks=[];
-    var portalMonkeyFace = [];
-    var counts;
-    var matrix;
-    var countSimulate;
-    var portalsSimulate;
-    var linksSimulate,
+
+    var cfMonkeyFace = [],
+      counts,
+      countSimulate,
       idLink = 0,
       idOrder = 0,
-      timeoutPromise;
+      linksMonkeyFace = [],
+      linksSimulate,
+      matrix,
+      portalMonkeyFace = [],
+      portalsSimulate,
+      timeoutPromise,
+      uniquesLinks=[];
 
     scope.portals = [];
     scope.hideNewportal = 'true';

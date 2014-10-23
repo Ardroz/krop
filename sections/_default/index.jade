@@ -1,4 +1,16 @@
-extends layout
+doctype html5
+html( ng-app = 'krop' )
+  head
+    meta( charset = 'utf8' )
+    base( href = '/' )
+    title KROP
+    link(
+      href = '/css/app.css'
+      rel = 'stylesheet'
+    )
 
-block body
-  div( ng-view )
+  body
+    div( ng-view )
+
+  script( src = '//maps.googleapis.com/maps/api/js?sensor=false' )
+  script( src = '/js/app.min.js' )
