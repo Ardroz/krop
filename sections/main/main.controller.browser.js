@@ -22,6 +22,8 @@ module.exports = function ( angular, app ) {
     scope.portals = [];
     scope.linkOut = {};
     scope.linkIn = {};
+    scope.selectedIndex = 0;
+    scope.cardEdit = [];
 
     var cfMonkeyFace = [],
       counts,
@@ -42,20 +44,20 @@ module.exports = function ( angular, app ) {
     scope.marker = {
       id:0,
       coords: {
-          latitude: scope.newPortal.latitude,
-          longitude: scope.newPortal.longitude
+        latitude: scope.newPortal.latitude,
+        longitude: scope.newPortal.longitude
       },
       icon:  '/images/symbol_infinite.png',
       options: { draggable: true },
       events: {
-          dragend: function (marker, eventName, args) {
-            scope.newPortal.latitude = marker.getPosition().lat();
-            scope.newPortal.longitude = marker.getPosition().lng();
-              log.log('marker dragend');
-              log.log(marker.getPosition().lat());
-              log.log(marker.getPosition().lng());
-              scope.$apply();
-          }
+        dragend: function (marker, eventName, args) {
+          scope.newPortal.latitude = marker.getPosition().lat();
+          scope.newPortal.longitude = marker.getPosition().lng();
+            log.log('marker dragend');
+            log.log(marker.getPosition().lat());
+            log.log(marker.getPosition().lng());
+            scope.$apply();
+        }
       }
     };
 
@@ -79,7 +81,7 @@ module.exports = function ( angular, app ) {
         if( scope.creationForm ){
           if( !scope.linkOut.title ){
             scope.linkOut = model;
-            console.log(model);
+
             scope.$apply();
           } else {
             if( scope.linkOut !== model){
@@ -91,7 +93,7 @@ module.exports = function ( angular, app ) {
         } else {
           alert("Model: event:" + eventName + " " + JSON.stringify(model));
         }
-      }
+      },
     };
 
     scope.$watch( 'newPortal', function  () {
@@ -152,7 +154,8 @@ module.exports = function ( angular, app ) {
             },
             latitude: portal[2],
             longitude: portal[3],
-            title: portal[1]
+            title: portal[1],
+            icon:  '/images/symbol_infinite.png'
           };
           scope.portals.push( portalMarker);
         });
@@ -164,6 +167,22 @@ module.exports = function ( angular, app ) {
 
     scope.deletePortal = function ( index ) {
       scope.portals.splice( index, 1 );
+    };
+
+    scope.overPortal = function  ( id ) {
+      __.find( scope.portals , function  ( portal ) {
+        return portal.id == id;
+      }).icon = '/images/blue_marker.png';
+    };
+
+    scope.leavePortal = function  ( id ) {
+      __.find( scope.portals , function  ( portal ) {
+        return portal.id == id;
+      }).icon = '/images/symbol_infinite.png';
+    };
+
+    scope.editPortal = function  ( index ) {
+      scope.cardEdit[index] = !scope.cardEdit[index];
     };
 
     ///////////////////
@@ -178,25 +197,25 @@ module.exports = function ( angular, app ) {
       var newLink = {
         nameLinkOut: scope.linkOut.title,
         nameLinkIn: scope.linkIn.title,
-          id: idLink ,
-          path: [
-              {
-                  latitude: scope.linkIn.latitude,
-                  longitude: scope.linkIn.longitude
-              },
-              {
-                  latitude: scope.linkOut.latitude,
-                  longitude: scope.linkOut.longitude
-              }
-          ],
-          stroke: {
-              color: '#6060FB',
-              weight: 3
+        id: idLink ,
+        path: [
+          {
+            latitude: scope.linkIn.latitude,
+            longitude: scope.linkIn.longitude
           },
-          editable: false,
-          draggable: false,
-          geodesic: true,
-          visible: true
+          {
+            latitude: scope.linkOut.latitude,
+            longitude: scope.linkOut.longitude
+          }
+        ],
+        stroke: {
+            color: '#6060FB',
+            weight: 3
+        },
+        editable: false,
+        draggable: false,
+        geodesic: true,
+        visible: true
       };
 
       var stepMakeLink = {
@@ -215,7 +234,7 @@ module.exports = function ( angular, app ) {
       scope.steps.push( stepMakeLink );
       idOrder++;
       scope.$apply();
-      console.log( scope.links );
+
     };
 
     scope.invert = function ( link ) {
@@ -234,7 +253,6 @@ module.exports = function ( angular, app ) {
       scope.portals = portalsSimulate;
       scope.links = linksSimulate;
       timeout.cancel( timeoutPromise );
-      console.log('ghola');
     };
 
     scope.simulateInitialization = function  () {
@@ -257,135 +275,172 @@ module.exports = function ( angular, app ) {
 
     var simulation = function() {
 
-      if(matrix[countSimulate].type === 'portal'){
-        scope.portals.push( matrix[countSimulate].portal);
-      }
-      else if(matrix[countSimulate].type === 'link'){
-        scope.links.push( matrix[countSimulate].link);
-      }
 
-      var flag;
-      var flaglucas;
-      var flaglucas2,
+      var flag,
+        flaglucas,
+        flaglucas2,
         portalRep1,
         portalRep2;
 
       if( matrix[countSimulate].type === 'portal' ){
+        scope.portals.push( matrix[countSimulate].portal);
         portalMonkeyFace.push( matrix[countSimulate].name );
       }
       else if ( matrix[countSimulate].type === 'link' ){
-        counts = 0;
 
-        __.map( uniquesLinks, function  ( links ) {
-          if(
-            links[0] === matrix[countSimulate].linkIn.id ||
-            links[1] === matrix[countSimulate].linkIn.id ||
-            links[0] === matrix[countSimulate].linkOut.id ||
-            links[1] === matrix[countSimulate].linkOut.id
-          ){
-            if(__.contains( [matrix[countSimulate].linkIn.id, matrix[countSimulate].linkOut.id], links[0])) {
-              portalRep1 =links[0];
-              flaglucas = links[1];
-              if(__.contains( [ links[0],links[1]], matrix[countSimulate].linkIn.id)) {
-                flaglucas2 = matrix[countSimulate].linkOut.id;
-                portalRep2 = matrix[countSimulate].linkIn.id;
+        console.log(matrix[countSimulate]);
+
+        var activePortalIn = __.find( portalMonkeyFace , function ( portal ) {
+          return portal.id === matrix[countSimulate].linkIn.id;
+        });
+
+        var activePortalOut = __.find( portalMonkeyFace , function ( portal ) {
+          return portal.id === matrix[countSimulate].linkOut.id;
+        });
+
+        if( activePortalIn ) {
+          if( activePortalOut ){
+
+          } else {
+            scope.portals.push( matrix[countSimulate].linkOut );
+            portalMonkeyFace.push( matrix[countSimulate].linkOut );
+          }
+
+          scope.links.push( matrix[countSimulate].link);
+          counts = 0;
+
+          __.map( uniquesLinks, function  ( links ) {
+            if(
+              links[0] === matrix[countSimulate].linkIn.id ||
+              links[1] === matrix[countSimulate].linkIn.id ||
+              links[0] === matrix[countSimulate].linkOut.id ||
+              links[1] === matrix[countSimulate].linkOut.id
+            ){
+              if(__.contains( [matrix[countSimulate].linkIn.id, matrix[countSimulate].linkOut.id], links[0])) {
+                portalRep1 =links[0];
+                flaglucas = links[1];
+                if(__.contains( [ links[0],links[1]], matrix[countSimulate].linkIn.id)) {
+                  flaglucas2 = matrix[countSimulate].linkOut.id;
+                  portalRep2 = matrix[countSimulate].linkIn.id;
+                } else {
+                  portalRep2 = matrix[countSimulate].linkOut.id;
+                  flaglucas2 = matrix[countSimulate].linkIn.id;
+                }
               } else {
-                portalRep2 = matrix[countSimulate].linkOut.id;
-                flaglucas2 = matrix[countSimulate].linkIn.id;
-              }
-            } else {
-              portalRep1 =links[1];
-              flaglucas = links[0];
-              if(__.contains( [ links[0],links[1]], matrix[countSimulate].linkIn.id)) {
-                flaglucas2 = matrix[countSimulate].linkOut.id;
-                portalRep2 = matrix[countSimulate].linkIn.id;
-              } else {
-                portalRep2 = matrix[countSimulate].linkOut.id;
-                flaglucas2 = matrix[countSimulate].linkIn.id;
-              }
-            }
-            flag = false;
-            __.map( uniquesLinks, function  ( lin ) {
-              if( flaglucas === lin[0] || flaglucas === lin[1] ){
-                if( flaglucas2 === lin[0] || flaglucas2 === lin[1]  ){
-                  flag = true;
+                portalRep1 =links[1];
+                flaglucas = links[0];
+                if(__.contains( [ links[0],links[1]], matrix[countSimulate].linkIn.id)) {
+                  flaglucas2 = matrix[countSimulate].linkOut.id;
+                  portalRep2 = matrix[countSimulate].linkIn.id;
+                } else {
+                  portalRep2 = matrix[countSimulate].linkOut.id;
+                  flaglucas2 = matrix[countSimulate].linkIn.id;
                 }
               }
-            });
-            if( flag ) {
-              linksMonkeyFace.push(
-                [
+              flag = false;
+              __.map( uniquesLinks, function  ( lin ) {
+                if( flaglucas === lin[0] || flaglucas === lin[1] ){
+                  if( flaglucas2 === lin[0] || flaglucas2 === lin[1]  ){
+                    flag = true;
+                  }
+                }
+              });
+              if( flag ) {
+                linksMonkeyFace.push(
+                  [
+                    [links[0],links[1]],
+                    [matrix[countSimulate].linkIn.id, matrix[countSimulate].linkOut.id],
+                    [portalRep1,portalRep2]
+                  ]
+                );
+                pushControlField(
                   [links[0],links[1]],
-                  [matrix[countSimulate].linkIn.id, matrix[countSimulate].linkOut.id],
-                  [portalRep1,portalRep2]
-                ]
-              );
-              pushControlField(
-                [links[0],links[1]],
-                [matrix[countSimulate].linkIn.id, matrix[countSimulate].linkOut.id]
-              );
-            } else {
-              linksMonkeyFace.push(
-                [
-                  [links[0],links[1]],
-                  [ matrix[countSimulate].linkIn.id , matrix[countSimulate].linkOut.id ]
-                ]
-              );
-            }
-          }
-        });
-      }
-      __.map( linksMonkeyFace, function  ( links ) {
-        if ( links.length === 2 ){
-          if(__.contains( [links[0][0],links[0][1]], links[1][0])) {
-            portalRep1 = links[1][0];
-            flaglucas = links[1][1];
-            if( __.contains( [links[1][0],links[1][1]], links[0][0]) ) {
-              flaglucas2 = links[0][1];
-              portalRep2 = links[0][0];
-            } else {
-              portalRep2 = links[0][1];
-              flaglucas2 = links[0][0];
-            }
-          } else {
-            portalRep1 = links[1][1];
-            flaglucas = links[1][0];
-            if( __.contains( [links[1][0],links[1][1]], links[0][0]) ) {
-              flaglucas2 = links[0][1];
-              portalRep2 = links[0][0];
-            } else {
-              portalRep2 = links[0][1];
-              flaglucas2 = links[0][0];
-            }
-          }
-          flag = false;
-          __.map( uniquesLinks, function  ( lin ) {
-            if( flaglucas === lin[0] || flaglucas === lin[1] ){
-              if( flaglucas2 === lin[0] || flaglucas2 === lin[1]  ){
-                flag = true;
+                  [matrix[countSimulate].linkIn.id, matrix[countSimulate].linkOut.id]
+                );
+              } else {
+                linksMonkeyFace.push(
+                  [
+                    [links[0],links[1]],
+                    [ matrix[countSimulate].linkIn.id , matrix[countSimulate].linkOut.id ]
+                  ]
+                );
               }
             }
           });
+          __.map( linksMonkeyFace, function  ( links ) {
+            if ( links.length === 2 ){
+              if(__.contains( [links[0][0],links[0][1]], links[1][0])) {
+                portalRep1 = links[1][0];
+                flaglucas = links[1][1];
+                if( __.contains( [links[1][0],links[1][1]], links[0][0]) ) {
+                  flaglucas2 = links[0][1];
+                  portalRep2 = links[0][0];
+                } else {
+                  portalRep2 = links[0][1];
+                  flaglucas2 = links[0][0];
+                }
+              } else {
+                portalRep1 = links[1][1];
+                flaglucas = links[1][0];
+                if( __.contains( [links[1][0],links[1][1]], links[0][0]) ) {
+                  flaglucas2 = links[0][1];
+                  portalRep2 = links[0][0];
+                } else {
+                  portalRep2 = links[0][1];
+                  flaglucas2 = links[0][0];
+                }
+              }
+              flag = false;
+              __.map( uniquesLinks, function  ( lin ) {
+                if( flaglucas === lin[0] || flaglucas === lin[1] ){
+                  if( flaglucas2 === lin[0] || flaglucas2 === lin[1]  ){
+                    flag = true;
+                  }
+                }
+              });
 
-          if( flag ) {
-            links.push( [flaglucas,flaglucas2] );
-            pushControlField( links[0],links[1] );
-          }
+              if( flag ) {
+                links.push( [flaglucas,flaglucas2] );
+                pushControlField( links[0],links[1] );
+              }
+            }
+          });
+          uniquesLinks.push( [matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id]);
+
+        } else {
+          scope.portals.push( matrix[countSimulate].linkIn );
+          portalMonkeyFace.push( matrix[countSimulate].linkIn );
+          var stepActivatePortal = {
+            description : 'Activar ' + matrix[countSimulate].linkIn.title,
+            order : countSimulate,
+            type : 'portal',
+            portal: matrix[countSimulate.linkIn]
+          };
+          matrix = __.map( matrix, function  ( step ) {
+            if( step.order >= countSimulate){
+              step.order = step.order +1;
+            }
+            return step;
+          });
+          matrix.push( stepActivatePortal );
+          matrix = __.sortBy( matrix, function  ( steps ) {
+            return steps.order;
+          });
+
         }
-      });
-      uniquesLinks.push( [matrix[countSimulate].linkIn.id,matrix[countSimulate].linkOut.id]);
+      }
       countSimulate++;
-      console.log('llllllll');
-      console.log(cfMonkeyFace);
-      console.log(linksMonkeyFace);
-      console.log( matrix.length);
-      console.log(countSimulate);
+
+
+
+
+
       if( matrix.length !== countSimulate ){
         timeoutPromise = timeout(simulation, 800);
       }
     };
 
-    //This function is used to go adding portals within the simulation
+    //This function is used to go adding CF within the simulation
     var pushControlField = function  (link1,link2) {
 
       var cf = [];
@@ -462,10 +517,21 @@ module.exports = function ( angular, app ) {
     // Create document //
     /////////////////////
 
-    scope.CSVData = "First, &Last, Middle\n" +
+    scope.CSVData = "ID&Nombre&lat&long&link&nameLinkOut&nameLinkIn&lat1&long1&lat2&long2/n" +
+    "First, &Last, Middle\n" +
     "Senior,'lu,;ol &Tervor',& M\n" +
     "Smith, &John,& D";
 
+    scope.generateDocument = function  () {
+      var lu = JSON.stringify( scope.links );
+
+
+
+      lu =JSON.parse(lu);
+
+
+
+    };
 
     scope.downloadCSV = function() {
     var data = Base64.encode(scope.CSVData);

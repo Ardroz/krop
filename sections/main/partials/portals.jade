@@ -1,11 +1,31 @@
-div(
-  layout = 'vertical'
-)
-  h1 portals
-  div(
-    layout = 'vertical'
-    layout-align = 'end end'
-    layout-padding
+div( ng-show = 'selectedIndex === 0? 1:0')
+  md-card.cardsLu(
+    ng-repeat = 'portal in portals'
+    ng-mouseover = 'overPortal( portal.id )'
+    ng-mouseleave = 'leavePortal ( portal.id )'
+    ng-click = 'editPortal($index)'
   )
-    md-button.md-button-fab( aria-label = "New document" )
-      +
+    div(
+      layout='vertical'
+    )
+      h4( flex ng-bind = 'portal.title')
+      md-text-float(
+        label = 'Nombre'
+        ng-model = 'portal.title'
+        ng-show = 'cardEdit[$index]'
+      )
+      md-text-float(
+        label = 'Latitud',
+        ng-model = 'portal.latitude'
+        ng-show = 'cardEdit[$index]'
+      )
+      md-text-float(
+        label = 'Longitud'
+        ng-model = 'portal.longitude'
+        ng-show = 'cardEdit[$index]'
+      )
+  section#fixedbutton(layout = 'horizontal')
+    md-button.md-theme-green.md-button-fab(
+      type='file'
+      ng-file-select='onFileSelect($files)'
+    ) +

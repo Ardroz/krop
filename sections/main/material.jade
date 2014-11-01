@@ -1,68 +1,64 @@
-section(
-  layout = 'horizontal'
-  flex
-)
-  md-sidenav.md-sidenav-left.md-whiteframe-z2(
-    component-id = 'left'
-    is-locked-open = '$media("md")'
-  )
-    md-toolbar.md-theme-indigo
-      h3.md-toolbar-tools.kraken-background KROP
-    md-content
-      md-tabs( selected = '0' )
-        md-tab(
-          label = 'Portales'
+div(layout='vertical', layout-fill='')
+  section(layout='horizontal', flex='')
+    md-sidenav.md-sidenav-left.md-whiteframe-z2(layout='vertical')
+      md-toolbar.md-theme-indigo.headerSlideMenu
+        h3.md-toolbar-tools.kraken-background KROP
+        md-tabs( selected = 'selectedIndex' )
+          md-tab(
+            label = 'Portales'
+          )
+          md-tab(
+            label = 'Links'
+          )
+          md-tab(
+            label = 'Simulación'
+          )
+      md-content( flex )
+        include partials/portals
+        include partials/links
+        include partials/simulation
+    md-content(flex='')
+      google-map(
+        center = 'map.center'
+        draggable = 'true'
+        options = 'options'
+        zoom = 'map.zoom'
+      )
+        marker(
+          coords = 'marker.coords'
+          events = 'marker.events'
+          icon = 'marker.icon'
+          idkey = 'marker.id'
+          options = 'marker.options'
         )
-          include partials/portals
-        md-tab(
-          label = 'Links'
+        markers(
+          click = '"onClicked"'
+          coords = '"self"'
+          events = 'portalsEvents'
+          icon="'icon'"
+          models = 'portals'
+          options = '"options"'
         )
-          include partials/links
-        md-tab(
-          label = 'Simulación'
+        polyline(
+          draggable = 'p.draggable'
+          editable = 'p.editable'
+          fit = 'false'
+          geodesic = 'p.geodesic'
+          icons = 'p.icons'
+          ng-repeat = 'p in links'
+          path = 'p.path'
+          stroke = 'p.stroke'
+          visible = 'p.visible'
         )
-          include partials/simulation
-  md-content.md-content( flex )
-    google-map(
-      center = 'map.center'
-      draggable = 'true'
-      options = 'options'
-      zoom = 'map.zoom'
-    )
-      marker(
-        coords = 'marker.coords'
-        events = 'marker.events'
-        icon = 'marker.icon'
-        idkey = 'marker.id'
-        options = 'marker.options'
-      )
-      markers(
-        click = '"onClicked"'
-        coords = '"self"'
-        events = 'portalsEvents'
-        models = 'portals'
-        options = '"options"'
-      )
-      polyline(
-        draggable = 'p.draggable'
-        editable = 'p.editable'
-        fit = 'false'
-        geodesic = 'p.geodesic'
-        icons = 'p.icons'
-        ng-repeat = 'p in links'
-        path = 'p.path'
-        stroke = 'p.stroke'
-        visible = 'p.visible'
-      )
-      polygon(
-        draggable = 'p.draggable'
-        editable = 'p.editable'
-        fill = 'p.fill'
-        fit = 'false'
-        geodesic = 'p.geodesic'
-        ng-repeat = 'p in controlFields track by p.id'
-        path = 'p.path'
-        static = 'true'
-        stroke = 'p.stroke'
-        visible = 'p.visible'
-      )
+        polygon(
+          draggable = 'p.draggable'
+          editable = 'p.editable'
+          fill = 'p.fill'
+          fit = 'false'
+          geodesic = 'p.geodesic'
+          ng-repeat = 'p in controlFields track by p.id'
+          path = 'p.path'
+          static = 'true'
+          stroke = 'p.stroke'
+          visible = 'p.visible'
+        )

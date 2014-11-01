@@ -128,6 +128,9 @@
         button.btn.btn-danger(
           ng-click = 'stopSimulate()'
         ) Detener
+        button.btn.btn-success(
+          ng-click = 'generateDocument()'
+        ) Generar documento
         .thumbnail( ng-repeat = 'step in steps | orderBy: "order"'
         ( class = '{{ step.type === "comment" && "comment-ribbon" || step.type === "link" && "link-ribbon" || "portal-ribbon"}}'))
           span.pull-right
