@@ -1,2 +1,25 @@
 div( ng-show = 'selectedIndex === 2? 1:0')
-  h1 Simulacion
+  div(
+    layout='vertical'
+  )
+    md-button.md-raised.md-warn(
+      style = 'height: 30px;'
+      ng-click = 'simulateInitialization()'
+    ) Simular
+    md-button.md-raised.md-warn(
+      style = 'height: 30px;'
+      ng-click = 'stopSimulate()'
+    ) Detener
+    md-button.md-raised.md-warn(
+      style = 'height: 30px;'
+      ng-click = 'downloadCSV()'
+    ) Generar Documento
+
+    md-card.cardsLu(
+      ng-repeat = 'step in steps | orderBy: "order"'
+    )
+      div(
+        layout='vertical'
+      )
+        label( ng-bind = ' step.type' )
+        label( ng-bind = 'step.description')

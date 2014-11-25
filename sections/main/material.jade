@@ -1,5 +1,6 @@
-div(layout='vertical', layout-fill='')
-  section(layout='horizontal', flex='')
+doctype html
+div(layout='vertical', layout-fill)
+  section(layout='horizontal', flex)
     md-sidenav.md-sidenav-left.md-whiteframe-z2(layout='vertical')
       md-toolbar.md-theme-indigo.headerSlideMenu
         h3.md-toolbar-tools.kraken-background KROP
@@ -17,7 +18,7 @@ div(layout='vertical', layout-fill='')
         include partials/portals
         include partials/links
         include partials/simulation
-    md-content(flex='')
+    md-content(flex)
       google-map(
         center = 'map.center'
         draggable = 'true'

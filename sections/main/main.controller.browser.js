@@ -250,6 +250,7 @@ module.exports = function ( angular, app ) {
     ///////////////
 
     scope.stopSimulate = function  () {
+      console.log('stop');
       scope.portals = portalsSimulate;
       scope.links = linksSimulate;
       timeout.cancel( timeoutPromise );
@@ -275,7 +276,6 @@ module.exports = function ( angular, app ) {
 
     var simulation = function() {
 
-
       var flag,
         flaglucas,
         flaglucas2,
@@ -283,8 +283,11 @@ module.exports = function ( angular, app ) {
         portalRep2;
 
       if( matrix[countSimulate].type === 'portal' ){
+        console.log('portal');
+        console.log(matrix[countSimulate]);
         scope.portals.push( matrix[countSimulate].portal);
-        portalMonkeyFace.push( matrix[countSimulate].name );
+        portalMonkeyFace.push( matrix[countSimulate].portal);
+
       }
       else if ( matrix[countSimulate].type === 'link' ){
 
@@ -414,7 +417,7 @@ module.exports = function ( angular, app ) {
             description : 'Activar ' + matrix[countSimulate].linkIn.title,
             order : countSimulate,
             type : 'portal',
-            portal: matrix[countSimulate.linkIn]
+            portal: matrix[countSimulate].linkIn
           };
           matrix = __.map( matrix, function  ( step ) {
             if( step.order >= countSimulate){
@@ -426,14 +429,11 @@ module.exports = function ( angular, app ) {
           matrix = __.sortBy( matrix, function  ( steps ) {
             return steps.order;
           });
-
+          scope.steps = matrix;
+          idOrder++;
         }
       }
       countSimulate++;
-
-
-
-
 
       if( matrix.length !== countSimulate ){
         timeoutPromise = timeout(simulation, 800);
@@ -517,25 +517,11 @@ module.exports = function ( angular, app ) {
     // Create document //
     /////////////////////
 
-    scope.CSVData = "ID&Nombre&lat&long&link&nameLinkOut&nameLinkIn&lat1&long1&lat2&long2/n" +
-    "First, &Last, Middle\n" +
-    "Senior,'lu,;ol &Tervor',& M\n" +
-    "Smith, &John,& D";
-
-    scope.generateDocument = function  () {
-      var lu = JSON.stringify( scope.links );
-
-
-
-      lu =JSON.parse(lu);
-
-
-
+    scope.downloadCSV = function() {
+      scope.CSVData = JSON.stringify( scope.portals ) + '&' + JSON.stringify( scope.links ) + '&' + JSON.stringify( scope.steps);
+      var data = Base64.encode(scope.CSVData);
+      window.location.href = "data:text/csv;base64," + data;
     };
 
-    scope.downloadCSV = function() {
-    var data = Base64.encode(scope.CSVData);
-    window.location.href = "data:text/csv;base64," + data;
-  };
   }
 };
